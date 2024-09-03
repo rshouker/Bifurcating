@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://5b8x4jmt3scx"]
+
+[ext_resource type="Script" path="res://scripts/sneak_head.gd" id="1_2pxtg"]
+[ext_resource type="Texture2D" uid="uid://bchj4g8kn4mby" path="res://assets/LiveHead.png" id="2_kx05b"]
+[ext_resource type="Texture2D" uid="uid://dnwo8mmvc2pe6" path="res://assets/DeadHead.png" id="3_7p8w1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dmhum"]
+size = Vector2(128, 128)
+
+[node name="SneakHead" type="Area2D" groups=["SnakeHeads"]]
+script = ExtResource("1_2pxtg")
+
+[node name="AliveSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_kx05b")
+
+[node name="DeadSprite" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("3_7p8w1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_dmhum")
+
+[node name="RayCastFW" type="RayCast2D" parent="."]
+target_position = Vector2(0, -128)
+collide_with_areas = true
+
+[node name="RayCastLeft" type="RayCast2D" parent="."]
+target_position = Vector2(-128, 0)
+collide_with_areas = true
+
+[node name="RayCastRight" type="RayCast2D" parent="."]
+target_position = Vector2(128, 0)
+collide_with_areas = true

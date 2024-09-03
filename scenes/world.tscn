@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://b67a7naurwemo"]
+
+[ext_resource type="Script" path="res://scripts/world.gd" id="1_1bopk"]
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_1bopk")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.5, 0.5)
+
+[node name="SnakeHeads" type="Node2D" parent="."]
+
+[node name="SnakeBodyParts" type="Node2D" parent="."]
+
+[node name="Obsticles" type="Node2D" parent="."]

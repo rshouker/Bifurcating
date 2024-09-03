@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://bwm2hjifm6acx"]
+
+[ext_resource type="Script" path="res://scripts/body_part.gd" id="1_2vh5a"]
+[ext_resource type="Texture2D" uid="uid://bud0ug7txbfk4" path="res://assets/Streight.png" id="1_afm23"]
+[ext_resource type="Texture2D" uid="uid://byf4x5a2yfg0v" path="res://assets/TurnLeft.png" id="2_m4ffb"]
+[ext_resource type="Texture2D" uid="uid://bl27cuytohm6h" path="res://assets/Bifurcate.png" id="3_djf6r"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4mpas"]
+size = Vector2(128, 128)
+
+[node name="BodyPart" type="Area2D"]
+script = ExtResource("1_2vh5a")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_4mpas")
+
+[node name="StraightSprite" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("1_afm23")
+
+[node name="TurnLeftSprite" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("2_m4ffb")
+
+[node name="BifurcateSprite" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("3_djf6r")
