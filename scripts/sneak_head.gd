@@ -11,7 +11,6 @@ const sprite_size: int = 128
 
 signal request_spawn_right(global_transform: Transform2D)
 signal request_body_part(global_transform: Transform2D, part_type: int)
-
 signal died()
 
 
@@ -31,40 +30,40 @@ func tick() -> void:
 	if ray_cast_fw.is_colliding():
 		_handle_blocked_path()
 	else:
-		# todo: add body part
+		request_body_part.emit(global_transform, Globals.BodyPartType.STRAIGHT)
 		_just_the_head_forward()
 
 func _just_the_head_forward() -> void:
 	position.y -= sprite_size
-	
+
 
 func _handle_blocked_path() -> void:
 	var can_turn_left: bool = ray_cast_left.is_colliding()
 	var can_turn_right: bool = ray_cast_right.is_colliding()
-	
+
 	if (not can_turn_left) and (not can_turn_right):
 		is_alive = false;
 		alive_sprite.visible = false
 		dead_sprite.visible = true
 		died.emit(global_transform)
 		return
-		
+
 	if can_turn_left and not can_turn_right:
-		#todo: request left turning body part
+		request_body_part.emit(global_transform, Globals.BodyPartType.TURN_LEFT)
 		rotation_degrees += 90;
 		_just_the_head_forward()
 		return
-		
+
 	if can_turn_right and not can_turn_left:
-		#todo: request right turning body part
+		request_body_part.emit(global_transform, Globals.BodyPartType.TURN_RIGHT)
 		rotation_degrees -= 90;
 		_just_the_head_forward()
 		return
-	
+
 	# got this far, can turn both ways, bifurcate!
-	
-	# todo: request bifurcating body part
+
+	request_body_part.emit(global_transform, Globals.BodyPartType.BIFURCATE)
 	# request spawn right, then turn left
 	request_spawn_right.emit(global_transform)
-	rotation_degrees += 90;
+	rotation_degrees -= 90;
 	_just_the_head_forward()
