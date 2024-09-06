@@ -1,23 +1,34 @@
 extends Node2D
 
+@export_color_no_alpha var background_color = Color("Pink")
 @export var quadrant_size: Vector2i = Vector2i(17, 9)
 @export_range(0.0, 1.0) var obsticle_probability: float = 0.01
 @onready var walls = $Walls
-@onready var sneak_heads = $SneakHeads
 @onready var obsticles = $Obsticles
-@onready var body_parts = $BodyParts
+@onready var body_parts = $SnakeBodyParts
 @onready var tick_timer = $TickTimer
-var sneak_head_count: int = 0
-var game_over: bool = false
+@onready var snake_heads = $SnakeHeads
+@onready var camera_2d = $Camera2D
 
 # constants for all the other scenes
-const SCENE_BODY_PART = preload("res://scenes/body_part.tscn")
-const SCENE_BRICK = preload("res://scenes/brick.tscn")
-const SCENE_OBSTICLE = preload("res://scenes/obsticle.tscn")
-const SCENE_SNEAK_HEAD = preload("res://scenes/sneak_head.tscn")
+const scene_body_part_name = "res://scenes/body_part.tscn"
+const scene_brick_name = "res://scenes/brick.tscn"
+const scene_obsticle_name = "res://scenes/obsticle.tscn"
+const scene_sneak_head_name = "res://scenes/sneak_head.tscn"
+
+# preloaded scenes
+@onready var scene_body_part = preload(scene_body_part_name)
+@onready var scene_brick = preload(scene_brick_name)
+@onready var scene_obsticle = preload(scene_obsticle_name)
+@onready var scene_sneak_head = preload(scene_sneak_head_name)
+
+var _snake_head_count: int = 0
+var _game_over: bool = false
+var _tick_in_progress = false
+
 
 func create_brick(pos: Vector2i):
-	var brick = SCENE_BRICK.instantiate()
+	var brick = scene_brick.instantiate()
 	brick.position = _get_world_cell_position(pos)
 	walls.add_child(brick)
 
@@ -82,22 +93,24 @@ func _create_obsticles():
 						is_free = false
 						break
 				if is_free:
-					var obsticle = SCENE_OBSTICLE.instantiate()
+					var obsticle = scene_obsticle.instantiate()
 					obsticle.position = _get_world_cell_position(pos)
 					obsticles.add_child(obsticle)
 
 func _ready():
 	randomize()
+	
 	_create_border()
 	# create head
 	var head: Node2D = _create_sneak_head()
 	head.position = _get_world_cell_position(Vector2i(0, quadrant_size.y))
 	_create_obsticles()
+	tick_timer.start()
 
 func _create_sneak_head() -> Node2D:
-	var sneak_head = SCENE_SNEAK_HEAD.instantiate()
-	sneak_heads.add_child(sneak_head)
-	sneak_head_count += 1
+	var sneak_head = scene_sneak_head.instantiate()
+	snake_heads.add_child(sneak_head)
+	_snake_head_count += 1
 
 	# Connect all signals
 	sneak_head.request_spawn_right.connect(_on_snake_head_request_spawn_right)
@@ -112,26 +125,40 @@ func _on_snake_head_request_spawn_right(new_global_transform: Transform2D):
 	var new_head = _create_sneak_head()
 	new_head.global_transform = new_global_transform
 	# turn right and move forward
-	new_head.set_angle_deg(90)
-	new_head.move(Globals.CELL_SIZE)
+	new_head.rotation_degrees += 90
+	new_head.forward()
 
-func _on_snake_head_request_body_part(new_global_transform: Transform2D, part_type: int):
-	var body_part = SCENE_BODY_PART.instantiate()
-	body_part.global_transform = new_global_transform
+func _on_snake_head_request_body_part(new_global_transform: Transform2D, part_type: int) -> void:
+	var body_part = scene_body_part.instantiate()
 	body_part.set_type(part_type)
+	body_part.global_transform = new_global_transform
 	body_parts.add_child(body_part)
 
+
 func _on_snake_head_died():
-	sneak_head_count -= 1
-	if sneak_head_count == 0:
-		game_over = true
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta):
-	pass
+	_snake_head_count -= 1
+	if _snake_head_count == 0:
+		_game_over = true
 
 
 func _on_tick_timer_timeout():
-	# defer call tick all heads, use the group SnakeHeads
-	get_tree().call_group_flags(SceneTree.GROUP_CALL_DEFERRED, "SnakeHeads", "tick")
+	if _tick_in_progress:
+		return
+	_tick_in_progress = true
+	var heads: Array[Node] = snake_heads.get_children()
+	for head in heads:
+		head.tick()
+		# colisions may have changed, wait for next calculation
+		await get_tree().physics_frame
+		#if head.tick():
+			## colisions may have changed, wait for next calculation
+			#await get_tree().physics_frame
+	_tick_in_progress = false
+
+	
+func _process(_delta):
+	if Input.is_action_just_pressed("ui_accept") and _game_over:
+		get_tree().reload_current_scene()
+	elif Input.is_action_just_pressed("ui_cancel"):
+		get_tree().reload_current_scene()
+	

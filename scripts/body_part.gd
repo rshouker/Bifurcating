@@ -4,8 +4,14 @@ extends Area2D
 @onready var turn_left_sprite = $TurnLeftSprite
 @onready var bifurcate_sprite = $BifurcateSprite
 
+var _type: Globals.BodyPartType
+
+#called before _ready
 func set_type(t: Globals.BodyPartType) -> void:
-	match t:
+	_type = t
+	
+func _ready():
+	match _type:
 		Globals.BodyPartType.STRAIGHT:
 			straight_sprite.visible = true;
 		Globals.BodyPartType.TURN_LEFT:

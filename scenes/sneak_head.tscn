@@ -31,3 +31,6 @@ collide_with_areas = true
 [node name="RayCastRight" type="RayCast2D" parent="."]
 target_position = Vector2(128, 0)
 collide_with_areas = true
+
+[node name="NextPos" type="Node2D" parent="."]
+position = Vector2(0, -128)

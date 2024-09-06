@@ -28,6 +28,10 @@ version_control/autoload_on_startup=true
 
 SnakeHeads=""
 
+[physics]
+
+common/physics_ticks_per_second=240
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
