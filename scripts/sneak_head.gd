@@ -28,7 +28,12 @@ func _process(_delta):
 func tick() -> bool:
 	if not is_alive:
 		return false
+	if Globals.force_raycast_update:
+		ray_cast_fw.force_raycast_update()
 	if ray_cast_fw.is_colliding():
+		if Globals.force_raycast_update:
+			ray_cast_left.force_raycast_update()
+			ray_cast_right.force_raycast_update()
 		_handle_blocked_path()
 	else:
 		request_body_part.emit(global_transform, Globals.BodyPartType.STRAIGHT)

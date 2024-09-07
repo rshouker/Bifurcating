@@ -1,8 +1,18 @@
 extends Node2D
 
-@export_color_no_alpha var background_color = Color("Pink")
+# these are for illusrationg the problems I had with collisions detection
+@export_group("Collision detection strategies")
+@export var await_physics_frame : bool = false
+@export var force_raycast_update : bool = true
+
+
+@export_group("Normal stuff")
+#@export_color_no_alpha var background_color = Color("Pink")
 @export var quadrant_size: Vector2i = Vector2i(17, 9)
-@export_range(0.0, 1.0) var obsticle_probability: float = 0.01
+@export_range(0.0, 1.0) var obsticle_probability: float = 0.03
+
+
+
 @onready var walls = $Walls
 @onready var obsticles = $Obsticles
 @onready var body_parts = $SnakeBodyParts
@@ -98,6 +108,7 @@ func _create_obsticles():
 					obsticles.add_child(obsticle)
 
 func _ready():
+	Globals.force_raycast_update = force_raycast_update
 	randomize()
 	
 	_create_border()
@@ -149,7 +160,8 @@ func _on_tick_timer_timeout():
 	for head in heads:
 		head.tick()
 		# colisions may have changed, wait for next calculation
-		await get_tree().physics_frame
+		if await_physics_frame:
+			await get_tree().physics_frame
 		#if head.tick():
 			## colisions may have changed, wait for next calculation
 			#await get_tree().physics_frame

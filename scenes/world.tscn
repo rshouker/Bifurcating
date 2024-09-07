@@ -4,8 +4,8 @@
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_1bopk")
-background_color = Color(0.999999, 0.518422, 0.626667, 1)
-obsticle_probability = 0.03
+await_physics_frame = true
+obsticle_probability = 0.05
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(0.25, 0.25)
@@ -27,6 +27,6 @@ offset_left = -3000.0
 offset_top = -1500.0
 offset_right = 3000.0
 offset_bottom = 1500.0
-color = Color(0.296033, 0.166815, 0.0193323, 1)
+color = Color(0.248248, 0.255062, 0.0141535, 1)
 
 [connection signal="timeout" from="TickTimer" to="." method="_on_tick_timer_timeout"]

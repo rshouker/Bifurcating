@@ -8,3 +8,5 @@ enum BodyPartType {
 }
 
 const CELL_SIZE: int = 128
+
+var force_raycast_update: bool
