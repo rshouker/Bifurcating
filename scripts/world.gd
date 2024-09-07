@@ -158,10 +158,10 @@ func _on_tick_timer_timeout():
 	_tick_in_progress = true
 	var heads: Array[Node] = snake_heads.get_children()
 	for head in heads:
-		head.tick()
 		# colisions may have changed, wait for next calculation
 		if await_physics_frame:
 			await get_tree().physics_frame
+		head.tick()
 		#if head.tick():
 			## colisions may have changed, wait for next calculation
 			#await get_tree().physics_frame
